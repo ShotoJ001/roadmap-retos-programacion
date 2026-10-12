@@ -1,29 +1,23 @@
-/* https://developer.mozilla.org/es/docs/Web/JavaScript */
+// https://developer.mozilla.org/es/docs/Web/JavaScript
 
-// Este es uncomentario en una sola linea
+// COMENTARIO EN UNA LINEA
 
-/* 
-Este es un comentario
-que contiene
-varias Lineas 
+/*
+COMENTARIO
+EN
+VARIAS
+LINEAS
 */
 
-// VARIALBLE
+let myVariable1 = 'Soy una variable en JavaScript';
+const myConstant1 = 'Soy una constante en JavaScript';
 
-let myVariable = "Mi primera Variable";
+let string = 'String';
+let number = 4;
+let boolean = false;
+// let isUndefined = undefined;
+let isNull = null;
+let bigInt = 323434245435345345342342346756n;
+let simbol = Symbol('Unico');
 
-//CONSTANTE
-
-const MY_CONSTANTE = 8;
-
-// TIPOS DE DATOS PRIMITIVOS
-
-Number = 235.33;
-String = "cadena de texto";
-Boolean = true;
-Boolean = false;
-BigInt = 9007199254740992n;
-undefined = undefined;
-Symbol = Symbol
-
-console.log("Hola JavaScript")
+console.log('!Hola, JavaScript');
