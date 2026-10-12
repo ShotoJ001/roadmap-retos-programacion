@@ -1,8 +1,4 @@
-<?php
-$servidor = "localhost"; $usuario = "root"; $clave = ""; $base = "Escuela"; $puerto = 3307;
-$conexion = mysqli_connect($servidor,$usuario,$clave,$base,$puerto);
-if (!$conexion) die("❌ Conexión: ".mysqli_connect_error());
-
+<?php include '../conexion.php';
 $mensaje = "";
 if ($_POST) {
     $n = $_POST['nombre']; $a = $_POST['apaterno']; $am = $_POST['amaterno'];
@@ -24,12 +20,13 @@ Correo: <input type='email' name='mail'>
 Teléfono: <input type='text' name='tel'>
 Grupo: <select name='id_grupo' required>
 <option value=''>-- Selecciona --</option>
-<?php
-$res = mysqli_query($conexion,"SELECT DISTINCT grupo FROM grupos ORDER BY grupo");
-while($g=mysqli_fetch_assoc($res)) echo "<option value='{$g['grupo']}'>{$g['grupo']}</option>";
-?>
+
+                      
+<?php $res = mysqli_query($conexion,"SELECT * FROM grupos ORDER BY grupo");
+while($g=mysqli_fetch_assoc($res)) echo "<option value='{$g['id_grupo']}'>{$g['grupo']} - {$g['carrera']}</option>"; ?>
 </select>
 <button type='submit'>Guardar Alumno</button>
 </form>
 <a href='../procesos/alumnos.php'>📋 Ver Lista</a><br>
-<a href='../index.php'>← Volver al Inicio</a></body></html>
+<a href='../index.php'>← Volver al Inicio</a>
+</body></html>

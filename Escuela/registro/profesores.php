@@ -1,8 +1,4 @@
-<?php
-$servidor = "localhost"; $usuario = "root"; $clave = ""; $base = "Escuela"; $puerto = 3307;
-$conexion = mysqli_connect($servidor,$usuario,$clave,$base,$puerto);
-if (!$conexion) die("❌ Conexión: ".mysqli_connect_error());
-
+<?php include '../conexion.php';
 $mensaje = "";
 if ($_POST) {
     $nom = $_POST['nom_prof']; $apa = $_POST['apaterno_prof']; $ama = $_POST['amaterno_prof'];
@@ -26,4 +22,5 @@ Estatus: <select name='estatus_prof'><option>Activo</option><option>Inactivo</op
 <button type='submit'>Guardar Profesor</button>
 </form>
 <a href='../procesos/profesores.php'>📋 Ver Lista</a><br>
-<a href='../index.php'>← Volver al Inicio</a></body></html>
+<a href='../index.php'>← Volver al Inicio</a>
+</body></html>
