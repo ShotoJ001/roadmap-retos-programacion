@@ -1,5 +1,7 @@
 <?php include '../conexion.php';
-$profesores = mysqli_query($conexion, "SELECT * FROM profesores ORDER BY id_prof");
+// Solo seleccionamos los profesores que estén Activos (o sin estatus definido)
+$profesores = mysqli_query($conexion, "SELECT * FROM profesores WHERE estatus = 'Activo' OR estatus IS NULL OR estatus = '' ORDER BY id_prof");
+if (!$profesores) { die("❌ Error en la consulta: " . mysqli_error($conexion)); }
 ?>
 <!DOCTYPE html>
 <html>
@@ -41,11 +43,17 @@ a:hover{opacity:0.8}
 <td><?= $fila['apaterno_prof'] ?></td>
 <td><?= $fila['amaterno_prof'] ?></td>
 <td><?= $fila['mail_prof'] ?></td>
-<td><?= $fila['estatus_prof'] ?></td>
+<td><?= $fila['estatus_prof'] ?? 'Activo' ?></td>
 <td>
+  <!-- Botón Agregar -->
   <a href="../registro/profesores.php" class="icon-agregar" title="Agregar / Dar de Alta">+</a>
-  <a href="../baja/profesores.php?id=<?= $fila['id_prof'] ?>" class="icon-editar" title="Editar">✏️</a>
-  <a href="../baja/profesores.php?id=<?= $fila['id_prof'] ?>" class="icon-eliminar" title="Eliminar / Dar de Baja">🗑️</a>
+  
+  <!-- Botón Editar (apunta al registro pasando el ID para modificar) -->
+   
+  <a href="../modificacion/profesores.php?id=<?= $fila['id_prof'] ?>" class="icon-editar" title="Editar">✏️</a>
+  
+  <!-- Botón Eliminar / Dar de Baja (manda al archivo de baja para ocultarlo de procesos) -->
+  <a href="../baja/profesores.php?id=<?= $fila['id_prof'] ?>" class="icon-eliminar" title="Eliminar / Dar de Baja" onclick="return confirm('¿Dar de baja a este profesor?')">🗑️</a>
 </td>
 </tr>
 <?php endwhile; ?>
@@ -54,7 +62,7 @@ a:hover{opacity:0.8}
 
 <div style="margin:20px 0">
   <a href="../registro/profesores.php">📝 Registro</a> |
-  <a href="../reportes/reporte_profesores.php">📄 Reporte</a> |
+  <a href="../reportes/profesores.php">📄 Reporte</a> |
   <a href="../baja/profesores.php">🗑️ Baja</a> |
   <a href="../index.php">🏠 Inicio</a>
   <br><br>

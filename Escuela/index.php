@@ -47,6 +47,7 @@ body { background:#f8f9fa; line-height:1.6; }
                     <a href="catalogos/grupos.php">👥 Grupos</a>
                     <a href="catalogos/materias.php">📚 Materias</a>
                     <a href="catalogos/profesores.php">👨‍🏫 Profesores</a>
+                    <a href="catalogos/unidades.php">📖 Unidades</a>
                 </div>
             </li>
             
@@ -55,12 +56,29 @@ body { background:#f8f9fa; line-height:1.6; }
                 <a href="#">Registrar ▾</a>
                 <div class="submenu">
                     <a href="registro/alumnos.php">👤 Alumnos</a>
+                     <a href="registro/calificacion.php">📋 Calificacion</a>
                     <a href="registro/grupos.php">👥 Grupos</a>
                     <a href="registro/materias.php">📚 Materias</a>
                     <a href="registro/profesores.php">👨‍🏫 Profesores</a>
+                    <a href="registro/unidades.php">📖 Unidades</a>
                 </div>
             </li>
-            
+
+             <!-- PROCESOS -->
+            <li>
+                <a href="#">Procesos ▾</a>
+                <div class="submenu">
+                    <a href="procesos/alumnos.php">👤 Alumnos</a>
+                    <a href="procesos/grupos.php">👥 Grupos</a>
+                    <a href="procesos/materias.php">📚 Materias</a>
+                    <a href="procesos/profesores.php">👨‍🏫 Profesores</a>
+                    <a href="procesos/inscripcion_grupos.php">📝 Inscripción a Grupos</a>
+                    <a href="procesos/asignacion_materias.php">📚 Asignación de Materias</a>
+                    <a href="procesos/calificaciones.php">📋 Calificaciones</a>
+                    <a href="procesos/CAPTURA DE CALIFICACIONES/captura_individual.php">✏️ Captura Calificaciones Individual</a>
+                    <a href="procesos/CAPTURA DE CALIFICACIONES/captura_masiva.php">📋 Captura Calificaciones Masiva</a>
+            </li>
+
             <!-- MODIFICAR -->
             <li>
                 <a href="#">Modificar ▾</a>
@@ -69,6 +87,7 @@ body { background:#f8f9fa; line-height:1.6; }
                     <a href="modificacion/grupos.php">👥 Grupos</a>
                     <a href="modificacion/materias.php">📚 Materias</a>
                     <a href="modificacion/profesores.php">👨‍🏫 Profesores</a>
+                    <a href="modificacion/unidades.php">📖 Unidades</a>
                 </div>
             </li>
         </ul>

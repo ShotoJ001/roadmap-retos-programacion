@@ -1,70 +1,101 @@
-<?php include '../conexion.php';
+<?php 
+include '../conexion.php';
 
-// Obtener el ID de la materia
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$dato = null;
-
-if ($id > 0) {
-    $dato = mysqli_fetch_assoc(
-        mysqli_query($conexion, "SELECT * FROM materias WHERE id_mat = $id")
-    );
-}
-
-// ✅ ELIMINAR — BAJA
-if (isset($_POST['confirmar_baja']) && $id > 0) {
-    mysqli_query($conexion, "DELETE FROM materias WHERE id_mat = $id");
-    header("Location: ../procesos/materias.php?msg=baja");
+// 1. Si llega un ID desde Procesos, cambia el estatus a Inactivo (Baja lógica)
+if (isset($_GET['id']) && !isset($_GET['accion'])) {
+    $id = (int)$_GET['id'];
+    mysqli_query($conexion, "UPDATE materias SET estatus='Inactivo' WHERE id_mat=$id");
+    header("Location: materias.php");
     exit;
 }
+
+// 2. Acción para Dar de Alta (Reactivar y regresar a Procesos)
+if (isset($_GET['accion']) && $_GET['accion'] == 'dar_alta') {
+    $id = (int)$_GET['id'];
+    mysqli_query($conexion, "UPDATE materias SET estatus='Activo' WHERE id_mat=$id");
+    header("Location: materias.php");
+    exit;
+}
+
+// 3. Acción para Eliminar Definitivamente de la Base de Datos
+if (isset($_GET['accion']) && $_GET['accion'] == 'eliminar_definitivo') {
+    $id = (int)$_GET['id'];
+    mysqli_query($conexion, "DELETE FROM materias WHERE id_mat=$id");
+    header("Location: materias.php");
+    exit;
+}
+
+// Consulta para mostrar únicamente las materias inactivas (dadas de baja)
+$materias_baja = mysqli_query($conexion, "SELECT m.*, CONCAT(p.nom_prof, ' ', p.apaterno_prof) AS profesor 
+                                           FROM materias m 
+                                           LEFT JOIN profesores p ON m.id_prof = p.id_prof 
+                                           WHERE m.estatus='Inactivo' 
+                                           ORDER BY m.id_mat");
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset='UTF-8'>
-<title>Baja de Materia</title>
+<title>Registro de Materias Dadas de Baja</title>
 <style>
-body{font-family:Arial;margin:30px;background:#f8f9fa}
-h2{color:#dc3545}
-.caja{max-width:500px;background:#fff;padding:25px;border-radius:8px;box-shadow:0 0 10px #ccc}
-.aviso{background:#fef2f2;color:#b91c1c;padding:15px;border-radius:4px;margin-bottom:20px;border-left:4px solid #dc3545}
-.datos{background:#f9fafb;padding:15px;border-radius:4px;margin-bottom:20px}
-.btn-baja{background:#dc3545;color:#fff;border:none;padding:12px 25px;border-radius:4px;cursor:pointer;font-size:16px}
-.btn-volver{background:#6b7280;color:#fff;text-decoration:none;padding:12px 25px;border-radius:4px;display:inline-block;margin-left:10px}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+body { background: #fffdf9; padding: 30px; }
+h2 { color: #00d8d6; font-size: 26px; margin-bottom: 20px; font-weight: bold; }
+.tabla-contenedor { background: #fff3e6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+table { border-collapse: collapse; width: 100%; text-align: left; }
+th { background: #00f0ff; color: #fff; padding: 14px 16px; font-weight: bold; font-size: 15px; }
+td { padding: 14px 16px; border-bottom: 1px solid #fbe3d5; color: #555; font-size: 14px; }
+.estatus-inactivo { color: #d35400; font-weight: bold; }
+.btn-alta { background: #2ecc71; color: #fff; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-right: 4px; display: inline-block; }
+.btn-eliminar { background: #e74c3c; color: #fff; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; }
+.enlaces { margin-top: 25px; font-size: 15px; }
+.enlaces a { color: #00d8d6; text-decoration: none; font-weight: bold; }
 </style>
 </head>
 <body>
 
-<h2>🗑️ Baja de Materia</h2>
+<h2>📁 Registro de Materias Dadas de Baja</h2>
 
-<?php if ($id > 0 && $dato): ?>
-
-<div class="caja">
-    <div class="aviso">
-        ⚠️ <strong>¿Seguro que deseas eliminar esta materia?</strong><br>
-        Esta acción no se puede deshacer.
-    </div>
-
-    <div class="datos">
-        <p><strong>Clave:</strong> <?= $dato['clave_mat'] ?></p>
-        <p><strong>Descripción / Nombre:</strong> <?= $dato['descripcion'] ?></p>
-        <p><strong>Créditos:</strong> <?= $dato['creditos'] ?></p>
-        <p><strong>Profesor asignado (ID):</strong> <?= $dato['id_prof'] ?></p>
-    </div>
-
-    <form method="post">
-        <button type="submit" name="confirmar_baja" class="btn-baja">✅ Confirmar Baja</button>
-        <a href="../procesos/materias.php" class="btn-volver">← Cancelar</a>
-    </form>
-</div>
-
-<?php else: ?>
-
-<div class="caja">
-    <p>No se seleccionó ninguna materia.</p>
-    <a href="../procesos/materias.php">← Volver a la lista de materias</a>
-</div>
-
+<div class="tabla-contenedor">
+<table>
+<thead>
+<tr>
+  <th>ID Baja</th>
+  <th>Descripción</th>
+  <th>Clave</th>
+  <th>Créditos</th>
+  <th>Profesor</th>
+  <th>Estatus</th>
+  <th>Fecha de Baja</th>
+  <th>Acciones</th>
+</tr>
+</thead>
+<tbody>
+<?php if (mysqli_num_rows($materias_baja) == 0): ?>
+<tr><td colspan="8" style="text-align:center; padding: 20px;">No hay materias dadas de baja</td></tr>
 <?php endif; ?>
+<?php while ($fila = mysqli_fetch_assoc($materias_baja)): ?>
+<tr>
+  <td><?= $fila['id_mat'] ?></td>
+  <td><?= $fila['descripcion'] ?></td>
+  <td><?= $fila['clave_mat'] ?></td>
+  <td><?= $fila['creditos'] ?></td>
+  <td><?= $fila['profesor'] ?? 'Sin asignar' ?></td>
+  <td><span class="estatus-inactivo">Inactivo</span></td>
+  <td><?= date('Y-m-d H:i:s') ?></td>
+  <td>
+    <a href="materias.php?accion=dar_alta&id=<?= $fila['id_mat'] ?>" class="btn-alta" title="Dar de Alta">✔</a>
+    <a href="materias.php?accion=eliminar_definitivo&id=<?= $fila['id_mat'] ?>" class="btn-eliminar" title="Eliminar Definitivamente" onclick="return confirm('¿Estás seguro de eliminar permanentemente esta materia?')">🗑️</a>
+  </td>
+</tr>
+<?php endwhile; ?>
+</tbody>
+</table>
+</div>
+
+<div class="enlaces">
+  <a href="../procesos/materias.php">Procesos</a> | <a href="../index.php">🏠 Inicio</a>
+</div>
 
 </body>
 </html>

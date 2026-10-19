@@ -3,7 +3,7 @@ $servidor = "localhost";
 $usuario = "root";
 $clave = "";
 $base = "Escuela";
-$puerto = 3306; // Si usas el estándar cambia a 3306
+$puerto = 3307; // Si usas el estándar cambia a 3306
 
 $conexion = mysqli_connect($servidor, $usuario, $clave, $base, $puerto);
 

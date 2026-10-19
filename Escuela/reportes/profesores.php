@@ -10,6 +10,7 @@ if (!$conexion) {
     die("❌ Conexión: " . mysqli_connect_error());
 }
 
+// Trae todos los profesores registrados (activos e inactivos)
 $profesores = mysqli_query($conexion, "SELECT * FROM profesores ORDER BY apaterno_prof, amaterno_prof");
 $total = mysqli_num_rows($profesores);
 ?>
@@ -26,6 +27,8 @@ $total = mysqli_num_rows($profesores);
         td { border: 1px solid #ccc; padding: 10px; }
         tr:nth-child(even) { background: #f9f9f9; }
         .total { margin-top: 15px; font-weight: bold; font-size: 16px; }
+        .estatus-activo { color: #15803d; font-weight: bold; }
+        .estatus-inactivo { color: #b91c1c; font-weight: bold; }
         button { background: #0864c0; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 10px 5px; }
         a { color: #0864c0; text-decoration: none; margin-left: 10px; font-weight: bold; }
         @media print {
@@ -47,13 +50,21 @@ $total = mysqli_num_rows($profesores);
     <th>Estatus</th>
 </tr>
 <?php while ($p = mysqli_fetch_assoc($profesores)): ?>
+<?php 
+  // Verifica si el estatus en la BD es Inactivo
+  $estatus_real = (!empty($p['estatus']) && $p['estatus'] == 'Inactivo') || (!empty($p['estatus_prof']) && $p['estatus_prof'] == 'Inactivo') ? 'Inactivo' : 'Activo';
+?>
 <tr>
     <td><?= $p['id_prof'] ?></td>
     <td><?= $p['apaterno_prof'] ?> <?= $p['amaterno_prof'] ?>, <?= $p['nom_prof'] ?></td>
     <td><?= $p['dom_prof'] ?: 'No especificado' ?></td>
     <td><?= $p['mail_prof'] ?: 'No especificado' ?></td>
     <td><?= $p['tel_prof'] ?: 'No especificado' ?></td>
-    <td><?= $p['estatus_prof'] ?></td>
+    <td>
+      <span class="<?= $estatus_real == 'Inactivo' ? 'estatus-inactivo' : 'estatus-activo' ?>">
+        <?= $estatus_real ?>
+      </span>
+    </td>
 </tr>
 <?php endwhile; ?>
 </table>
@@ -61,7 +72,8 @@ $total = mysqli_num_rows($profesores);
 <p class='total'>Total de profesores registrados: <?= $total ?></p>
 
 <button onclick='window.print()'>🖨️ Imprimir</button>
-<a href='../index.php'>← Volver al Inicio</a>
+<a href='../procesos/profesores.php'>← Volver a Procesos</a> | 
+<a href='../index.php'>🏠 Inicio</a>
 
 </body>
 </html>

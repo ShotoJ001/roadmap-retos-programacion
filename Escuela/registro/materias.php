@@ -9,7 +9,8 @@ if ($_POST) {
     $creditos = (int)$_POST['creditos'];
     $id_prof = (int)$_POST['id_prof'];
     
-    $sql = "INSERT INTO materias VALUES (NULL, '$descripcion', '$clave_mat', $creditos, $id_prof)";
+   $sql = "INSERT INTO materias (id_mat, descripcion, clave_mat, creditos, id_prof, estatus) 
+            VALUES (NULL, '$descripcion', '$clave_mat', $creditos, $id_prof, 'Activo')";
     
     if (mysqli_query($conexion, $sql)) {
         $mensaje = "✅ Materia registrada correctamente";

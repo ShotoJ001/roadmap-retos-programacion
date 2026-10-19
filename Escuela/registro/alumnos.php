@@ -1,10 +1,14 @@
 <?php include '../conexion.php';
 $mensaje = "";
 if ($_POST) {
-    $n = $_POST['nombre']; $a = $_POST['apaterno']; $am = $_POST['amaterno'];
-    $d = $_POST['dom']; $m = $_POST['mail']; $t = $_POST['tel']; $g = $_POST['id_grupo'];
-    $sql = "INSERT INTO alumnos VALUES(NULL,'$n','$a','$am','$d','$m','$t','$g')";
-    $mensaje = mysqli_query($conexion,$sql) ? "✅ Alumno registrado" : "❌ Error: ".mysqli_error($conexion);
+$n = $_POST['nombre']; $a = $_POST['apaterno']; $am = $_POST['amaterno'];
+$d = $_POST['dom']; $m = $_POST['mail']; $t = $_POST['tel']; $g = $_POST['id_grupo'];
+$sql = "INSERT INTO alumnos (id, nombre, apaterno, amaterno, dom, mail, tel, id_grupo, estatus) 
+VALUES (NULL, '$n', '$a', '$am', '$d', '$m', '$t', '$g', 'Activo')";
+            
+$mensaje = mysqli_query($conexion, $sql) 
+? "✅ Alumno registrado" 
+: "❌ Error: " . mysqli_error($conexion);
 }
 ?>
 <!DOCTYPE html><html><head><meta charset='UTF-8'><title>Registro Alumnos</title>

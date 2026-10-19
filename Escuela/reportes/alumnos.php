@@ -2,7 +2,15 @@
 $servidor = "localhost"; $usuario = "root"; $clave = ""; $base = "Escuela"; $puerto = 3307;
 $conexion = mysqli_connect($servidor,$usuario,$clave,$base,$puerto);
 if (!$conexion) die("❌ Conexión: ".mysqli_connect_error());
-$alumnos = mysqli_query($conexion,"SELECT * FROM alumnos ORDER BY apaterno, amaterno");
+
+// Consulta con LEFT JOIN para traer el nombre del grupo en lugar del número ID
+$consulta = "SELECT a.*, g.grupo AS clave_grupo 
+             FROM alumnos a 
+             LEFT JOIN grupos g ON a.id_grupo = g.id_grupo 
+             WHERE a.estatus = 'Activo' OR a.estatus IS NULL 
+             ORDER BY a.apaterno, a.amaterno";
+
+$alumnos = mysqli_query($conexion, $consulta);
 $total = mysqli_num_rows($alumnos);
 ?>
 <!DOCTYPE html><html><head><meta charset='UTF-8'><title>Reporte Alumnos</title>
@@ -18,7 +26,7 @@ $total = mysqli_num_rows($alumnos);
 <td><?=$a['dom']?></td>
 <td><?=$a['mail']?></td>
 <td><?=$a['tel']?></td>
-<td><?=$a['id_grupo']?></td>
+<td><?=$a['clave_grupo'] ?? 'Sin Grupo'?></td>
 </tr>
 <?php endwhile; ?>
 </table>

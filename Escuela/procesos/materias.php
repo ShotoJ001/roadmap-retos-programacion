@@ -1,8 +1,10 @@
 <?php include '../conexion.php';
 
+// Filtramos estricto para que SOLO muestre los activos y oculte de inmediato los dados de baja ('Inactivo')
 $materias = mysqli_query($conexion, "SELECT m.*, CONCAT(p.nom_prof, ' ', p.apaterno_prof) AS profesor 
                                      FROM materias m 
                                      LEFT JOIN profesores p ON m.id_prof = p.id_prof 
+                                     WHERE m.estatus = 'Activo' OR m.estatus IS NULL OR m.estatus = ''
                                      ORDER BY m.id_mat");
 ?>
 <!DOCTYPE html>
@@ -31,7 +33,7 @@ a:hover{opacity:0.8}
 <?php if (isset($_GET['msg'])): ?>
 <div class="mensaje">
     <?= $_GET['msg'] == 'editado' ? '✅ Materia actualizada' : '' ?>
-    <?= $_GET['msg'] == 'baja' ? '✅ Materia eliminada' : '' ?>
+    <?= $_GET['msg'] == 'baja' ? '✅ Materia dada de baja' : '' ?>
 </div>
 <?php endif; ?>
 
@@ -46,6 +48,10 @@ a:hover{opacity:0.8}
 </tr>
 
 <?php while ($fila = mysqli_fetch_assoc($materias)): ?>
+<?php 
+// Si el registro actual ya fue marcado como Inactivo, nos saltamos su fila para no dibujarla en Procesos
+if (isset($fila['estatus']) && $fila['estatus'] == 'Inactivo') continue; 
+?>
 <tr>
 <td><?= $fila['id_mat'] ?></td>
 <td><?= $fila['descripcion'] ?></td>
@@ -54,8 +60,8 @@ a:hover{opacity:0.8}
 <td><?= $fila['profesor'] ?? 'Sin asignar' ?></td>
 <td>
   <a href="../registro/materias.php" class="icon-agregar" title="Agregar">+</a>
-  <a href="../baja/materias.php?id=<?= $fila['id_mat'] ?>" class="icon-editar" title="Editar">✏️</a>
-  <a href="../baja/materias.php?id=<?= $fila['id_mat'] ?>" class="icon-eliminar" title="Eliminar">🗑️</a>
+  <a href="../modificacion/materias.php?id=<?= $fila['id_mat'] ?>" class="icon-editar" title="Editar">✏️</a>
+  <a href="../baja/materias.php?id=<?= $fila['id_mat'] ?>" class="icon-eliminar" title="Dar de Baja" onclick="return confirm('¿Dar de baja esta materia?')">🗑️</a>
 </td>
 </tr>
 <?php endwhile; ?>
@@ -64,7 +70,7 @@ a:hover{opacity:0.8}
 
 <div style="margin:20px 0">
   <a href="../registro/materias.php">📝 Registro</a> |
-  <a href="../reportes/reporte_materias.php">📄 Reporte</a> |
+  <a href="../reportes/materias.php">📄 Reporte</a> |
   <a href="../baja/materias.php">🗑️ Baja</a> |
   <a href="../index.php">🏠 Inicio</a>
   <br><br>

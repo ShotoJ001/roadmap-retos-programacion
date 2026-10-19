@@ -3,8 +3,10 @@ $mensaje = "";
 if ($_POST) {
     $nom = $_POST['nom_prof']; $apa = $_POST['apaterno_prof']; $ama = $_POST['amaterno_prof'];
     $dom = $_POST['dom_prof']; $mail = $_POST['mail_prof']; $tel = $_POST['tel_prof']; $est = $_POST['estatus_prof'];
-    $sql = "INSERT INTO profesores VALUES(NULL,'$nom','$apa','$ama','$dom','$mail','$tel','$est')";
-    $mensaje = mysqli_query($conexion,$sql) ? "✅ Profesor registrado" : "❌ Error: ".mysqli_error($conexion);
+$sql = "INSERT INTO profesores (id_prof, nom_prof, apaterno_prof, amaterno_prof, dom_prof, mail_prof, tel_prof, estatus_prof, estatus) 
+            VALUES (NULL, '$nom', '$apa', '$ama', '$dom', '$mail', '$tel', '$est', 'Activo')";
+            
+    $mensaje = mysqli_query($conexion, $sql) ? "✅ Profesor registrado" : "❌ Error: ".mysqli_error($conexion);
 }
 ?>
 <!DOCTYPE html><html><head><meta charset='UTF-8'><title>Registro Profesores</title>

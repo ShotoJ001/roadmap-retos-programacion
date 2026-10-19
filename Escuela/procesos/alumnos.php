@@ -1,12 +1,14 @@
 <?php include '../conexion.php';
 
-// Cambiamos id_alumno por id
-$consulta = "SELECT * FROM alumnos ORDER BY id";
-$alumnos = mysqli_query($conexion, $consulta);
+// Consulta con LEFT JOIN para cruzar el id_grupo de alumnos con el nombre/grupo de la tabla grupos
+$consulta = "SELECT a.*, g.grupo AS clave_grupo, g.Nombre AS nombre_grupo 
+             FROM alumnos a 
+             LEFT JOIN grupos g ON a.id_grupo = g.id_grupo 
+             WHERE a.estatus = 'Activo' OR a.estatus IS NULL 
+             ORDER BY a.id";
 
-if (!$alumnos) {
-    die("❌ Error en la consulta: " . mysqli_error($conexion));
-}
+$alumnos = mysqli_query($conexion, $consulta);
+if (!$alumnos) { die("❌ Error en la consulta: " . mysqli_error($conexion)); }
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,20 +54,19 @@ a:hover{opacity:0.8}
 <td><?= $fila['dom'] ?? '' ?></td>
 <td><?= $fila['mail'] ?? '' ?></td>
 <td><?= $fila['tel'] ?? '' ?></td>
-<td><?= $fila['id_grupo'] ?? '' ?></td>
+<td><?= $fila['clave_grupo'] ?? 'Sin Grupo' ?></td>
 <td>
   <a href="../registro/alumnos.php" class="icon-agregar" title="Agregar / Dar de Alta">+</a>
-  <a href="../baja/alumnos.php?id=<?= $fila['id'] ?>" class="icon-editar" title="Editar">✏️</a>
-  <a href="../baja/alumnos.php?id=<?= $fila['id'] ?>" class="icon-eliminar" title="Eliminar / Dar de Baja">🗑️</a>
+  <a href="../modificacion/alumnos.php?id=<?= $fila['id'] ?>" class="icon-editar" title="Editar">✏️</a>
+  <a href="../baja/alumnos.php?id=<?= $fila['id'] ?>" class="icon-eliminar" title="Dar de Baja" onclick="return confirm('¿Dar de baja?')">🗑️</a>
 </td>
 </tr>
 <?php endwhile; ?>
-
 </table>
 
 <div style="margin:20px 0">
   <a href="../registro/alumnos.php">📝 Registro</a> |
-  <a href="../reportes/reporte_alumnos.php">📄 Reporte</a> |
+  <a href="../reportes/alumnos.php">📄 Reporte</a> |
   <a href="../baja/alumnos.php">🗑️ Baja</a> |
   <a href="../index.php">🏠 Inicio</a>
   <br><br>

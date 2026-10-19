@@ -1,97 +1,97 @@
-<?php include '../conexion.php';
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+<?php 
+include '../conexion.php';
 
-if ($id > 0) {
-    $dato = mysqli_fetch_assoc(mysqli_query($conexion, "SELECT * FROM profesores WHERE id_prof=$id"));
+// 1. Si llega un ID desde Procesos sin ninguna acción previa, realiza la baja lógica cambiando estatus a Inactivo
+if (isset($_GET['id']) && !isset($_GET['accion'])) {
+    $id = (int)$_GET['id'];
+    mysqli_query($conexion, "UPDATE profesores SET estatus='Inactivo' WHERE id_prof=$id");
+    header("Location: profesores.php");
+    exit;
 }
 
-if (isset($_POST['baja']) && $id > 0) {
+// 2. Acción para Dar de Alta (Reactivar y regresarlo a Procesos)
+if (isset($_GET['accion']) && $_GET['accion'] == 'dar_alta') {
+    $id = (int)$_GET['id'];
+    mysqli_query($conexion, "UPDATE profesores SET estatus='Activo' WHERE id_prof=$id");
+    header("Location: profesores.php");
+    exit;
+}
+
+// 3. Acción para Eliminar Definitivamente de la Base de Datos
+if (isset($_GET['accion']) && $_GET['accion'] == 'eliminar_definitivo') {
+    $id = (int)$_GET['id'];
     mysqli_query($conexion, "DELETE FROM profesores WHERE id_prof=$id");
-    header("Location: ../procesos/profesores.php?msg=baja");
+    header("Location: profesores.php");
     exit;
 }
 
-if (isset($_POST['editar']) && $id > 0) {
-    $nom_prof = $_POST['nom_prof'];
-    $apaterno_prof = $_POST['apaterno_prof'];
-    $amaterno_prof = $_POST['amaterno_prof'];
-    $dom_prof = $_POST['dom_prof'];
-    $mail_prof = $_POST['mail_prof'];
-    $tel_prof = $_POST['tel_prof'];
-    $estatus_prof = $_POST['estatus_prof'];
-
-    mysqli_query($conexion, "UPDATE profesores SET 
-        nom_prof='$nom_prof', apaterno_prof='$apaterno_prof', amaterno_prof='$amaterno_prof',
-        dom_prof='$dom_prof', mail_prof='$mail_prof', tel_prof='$tel_prof', estatus_prof='$estatus_prof'
-        WHERE id_prof=$id");
-    
-    header("Location: ../procesos/profesores.php?msg=editado");
-    exit;
-}
+// Consulta para mostrar únicamente los profesores inactivos (dados de baja)
+$profesores_baja = mysqli_query($conexion, "SELECT * FROM profesores WHERE estatus='Inactivo' ORDER BY id_prof");
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset='UTF-8'>
-<title>Editar y Baja — Profesor</title>
+<title>Registro de Profesores Dados de Baja</title>
 <style>
-body{font-family:Arial;margin:30px;background:#f8f9fa}
-h2{color:#dc3545}
-.caja{max-width:500px;background:#fff;padding:25px;border-radius:8px;box-shadow:0 0 10px #ccc;margin-bottom:20px}
-.aviso{background:#f8d7da;color:#721c24;padding:15px;border-radius:4px;margin-bottom:20px}
-.form-editar{background:#e3f2fd;padding:20px;border-radius:6px;margin-bottom:20px}
-input,select{width:100%;padding:8px;margin:5px 0 15px;box-sizing:border-box;border:1px solid #ddd;border-radius:4px}
-.btn-baja{padding:10px 20px;background:#dc3545;color:#fff;border:none;border-radius:4px;cursor:pointer}
-.btn-guardar{padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:4px;cursor:pointer}
-.btn-volver{padding:10px 20px;background:#6c757d;color:#fff;border:none;border-radius:4px;cursor:pointer;text-decoration:none;display:inline-block;margin-left:10px}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+body { background: #fffdf9; padding: 30px; }
+h2 { color: #00d8d6; font-size: 26px; margin-bottom: 20px; font-weight: bold; }
+.tabla-contenedor { background: #fff3e6; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+table { border-collapse: collapse; width: 100%; text-align: left; }
+th { background: #00f0ff; color: #fff; padding: 14px 16px; font-weight: bold; font-size: 15px; }
+td { padding: 14px 16px; border-bottom: 1px solid #fbe3d5; color: #555; font-size: 14px; }
+.estatus-inactivo { color: #d35400; font-weight: bold; }
+.btn-alta { background: #2ecc71; color: #fff; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-right: 4px; display: inline-block; }
+.btn-eliminar { background: #e74c3c; color: #fff; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; }
+.enlaces { margin-top: 25px; font-size: 15px; }
+.enlaces a { color: #00d8d6; text-decoration: none; font-weight: bold; }
 </style>
 </head>
 <body>
 
-<?php if ($id > 0 && $dato): ?>
+<h2>📁 Registro de Profesores Dados de Baja</h2>
 
-<h2>Editar y Dar de Baja — Profesor</h2>
-
-<div class="form-editar">
-<h3>✏️ Editar Datos</h3>
-<form method="post">
-Nombre:
-<input type="text" name="nom_prof" value="<?= $dato['nom_prof'] ?>" required>
-Apellido Paterno:
-<input type="text" name="apaterno_prof" value="<?= $dato['apaterno_prof'] ?>" required>
-Apellido Materno:
-<input type="text" name="amaterno_prof" value="<?= $dato['amaterno_prof'] ?>">
-Domicilio:
-<input type="text" name="dom_prof" value="<?= $dato['dom_prof'] ?>">
-Correo:
-<input type="email" name="mail_prof" value="<?= $dato['mail_prof'] ?>">
-Teléfono:
-<input type="text" name="tel_prof" value="<?= $dato['tel_prof'] ?>">
-Estatus:
-<select name="estatus_prof">
-    <option <?= $dato['estatus_prof']=='Activo'?'selected':'' ?>>Activo</option>
-    <option <?= $dato['estatus_prof']=='Inactivo'?'selected':'' ?>>Inactivo</option>
-</select>
-<button type="submit" name="editar" class="btn-guardar">💾 Guardar Cambios</button>
-</form>
-</div>
-
-<div class="caja">
-<h3>🗑️ Dar de Baja</h3>
-<div class="aviso">⚠️ Se eliminará permanentemente.</div>
-<p><strong>Nombre:</strong> <?= $dato['nom_prof'] ?> <?= $dato['apaterno_prof'] ?><br>
-<strong>Correo:</strong> <?= $dato['mail_prof'] ?></p>
-<form method="post">
-<button type="submit" name="baja" class="btn-baja">✅ Confirmar Baja</button>
-<a href="../procesos/profesores.php" class="btn-volver">← Cancelar</a>
-</form>
-</div>
-
-<?php else: ?>
-<h2>Baja de Profesores</h2>
-<p>No se seleccionó ningún profesor.</p>
-<a href="../procesos/profesores.php">← Volver</a>
+<div class="tabla-contenedor">
+<table>
+<thead>
+<tr>
+  <th>ID Baja</th>
+  <th>Nombre</th>
+  <th>Apellido Paterno</th>
+  <th>Apellido Materno</th>
+  <th>Correo</th>
+  <th>Estatus</th>
+  <th>Fecha de Baja</th>
+  <th>Acciones</th>
+</tr>
+</thead>
+<tbody>
+<?php if (mysqli_num_rows($profesores_baja) == 0): ?>
+<tr><td colspan="8" style="text-align:center; padding: 20px;">No hay profesores dados de baja</td></tr>
 <?php endif; ?>
+<?php while ($fila = mysqli_fetch_assoc($profesores_baja)): ?>
+<tr>
+  <td><?= $fila['id_prof'] ?></td>
+  <td><?= $fila['nom_prof'] ?></td>
+  <td><?= $fila['apaterno_prof'] ?></td>
+  <td><?= $fila['amaterno_prof'] ?></td>
+  <td><?= $fila['mail_prof'] ?></td>
+  <td><span class="estatus-inactivo">Inactivo</span></td>
+  <td><?= date('Y-m-d H:i:s') ?></td>
+  <td>
+    <a href="profesores.php?accion=dar_alta&id=<?= $fila['id_prof'] ?>" class="btn-alta" title="Dar de Alta">✔</a>
+    <a href="profesores.php?accion=eliminar_definitivo&id=<?= $fila['id_prof'] ?>" class="btn-eliminar" title="Eliminar Definitivamente" onclick="return confirm('¿Estás seguro de eliminar permanentemente este profesor?')">🗑️</a>
+  </td>
+</tr>
+<?php endwhile; ?>
+</tbody>
+</table>
+</div>
+
+<div class="enlaces">
+  <a href="../procesos/profesores.php">Procesos</a> | <a href="../index.php">🏠 Inicio</a>
+</div>
 
 </body>
 </html>

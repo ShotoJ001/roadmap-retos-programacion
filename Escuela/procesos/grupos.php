@@ -1,5 +1,6 @@
 <?php include '../conexion.php';
-$grupos = mysqli_query($conexion, "SELECT * FROM grupos ORDER BY id_grupo");
+// Solo seleccionamos los grupos que estén Activos
+$grupos = mysqli_query($conexion, "SELECT * FROM grupos WHERE estatus_grupo = 'Activo' OR estatus_grupo IS NULL ORDER BY id_grupo");
 ?>
 <!DOCTYPE html>
 <html>
@@ -47,7 +48,7 @@ a:hover{opacity:0.8}
 <td>
   <a href="../registro/grupos.php" class="icon-agregar" title="Agregar / Dar de Alta">+</a>
   <a href="../baja/grupos.php?id=<?= $fila['id_grupo'] ?>" class="icon-editar" title="Editar">✏️</a>
-  <a href="../baja/grupos.php?id=<?= $fila['id_grupo'] ?>" class="icon-eliminar" title="Eliminar / Dar de Baja">🗑️</a>
+  <a href="../baja/grupos.php?id=<?= $fila['id_grupo'] ?>" class="icon-eliminar" title="Dar de Baja" onclick="return confirm('¿Dar de baja este grupo?')">🗑️</a>
 </td>
 </tr>
 <?php endwhile; ?>
@@ -56,7 +57,7 @@ a:hover{opacity:0.8}
 
 <div style="margin:20px 0">
   <a href="../registro/grupos.php">📝 Registro</a> |
-  <a href="../reportes/reporte_grupos.php">📄 Reporte</a> |
+  <a href="../reportes/grupos.php">📄 Reporte</a> |
   <a href="../baja/grupos.php">🗑️ Baja</a> |
   <a href="../index.php">🏠 Inicio</a>
   <br><br>
